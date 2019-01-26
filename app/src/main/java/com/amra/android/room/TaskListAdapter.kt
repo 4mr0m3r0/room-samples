@@ -9,9 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.item_task_row.view.*
 
-class TaskListAdapter : RecyclerView.Adapter<TaskListAdapter.ViewHolder>() {
-
-    private val tasks: MutableList<Task> = ArrayList()
+class TaskListAdapter (private val clickListener: (Task) -> Unit)
+    : ListAdapter<Task, TaskListAdapter.ViewHolder>(DIFF_UTIL_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -19,19 +18,28 @@ class TaskListAdapter : RecyclerView.Adapter<TaskListAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(tasks[position])
+        holder.bind(getItem(position), clickListener)
     }
 
-    override fun getItemCount(): Int = tasks.size
+    companion object {
 
-    fun addTask(task: Task) {
-        tasks.add(task)
-        notifyItemInserted(tasks.size)
+        val DIFF_UTIL_CALLBACK = object : DiffUtil.ItemCallback<Task>() {
+
+            override fun areItemsTheSame(oldItem: Task, newItem: Task): Boolean {
+                return oldItem.id == newItem.id
+            }
+
+            override fun areContentsTheSame(oldItem: Task, newItem: Task): Boolean {
+                return oldItem == newItem
+            }
+
+        }
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(task: Task) {
+        fun bind(task: Task, clickListener: (Task) -> Unit) {
             itemView.taskTitle.text = task.title
+            itemView.setOnClickListener { clickListener(task) }
         }
     }
 }
