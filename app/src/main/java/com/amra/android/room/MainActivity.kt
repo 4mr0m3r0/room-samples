@@ -1,5 +1,6 @@
 package com.amra.android.room
 
+import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.design.widget.Snackbar
@@ -39,10 +40,20 @@ class MainActivity : AppCompatActivity() {
             return@OnEditorActionListener false
         })
 
-        taskListAdapter = TaskListAdapter()
+        taskListAdapter = TaskListAdapter {
+            val taskId = it.id
+            startActivity(TaskDetailsActivity.launchIntent(this, taskId))
+        }
         taskList.layoutManager = LinearLayoutManager(this)
         taskList.adapter = taskListAdapter
 
+        setLiveDataObserver()
+    }
+
+    private fun setLiveDataObserver() {
+        taskDao.getAll().observe(this, Observer<List<Task>> {
+            taskListAdapter.submitList(it)
+        })
     }
 
     private fun addTask() {
@@ -55,7 +66,9 @@ class MainActivity : AppCompatActivity() {
 
         val task = Task(title = title)
 
-        thread { taskDao.insert(task) }
+        thread {
+            taskDao.insert(task)
+        }
     }
 
 }
