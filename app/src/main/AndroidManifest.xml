@@ -20,6 +20,11 @@
 
         <activity
                 android:name=".TaskDetailsActivity"
-                android:label="@string/details"/>
+                android:label="@string/details"
+                android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+                android:name=".users.UsersActivity"
+                android:label="@string/users"
+                android:theme="@style/AppTheme.NoActionBar" />
     </application>
 </manifest>

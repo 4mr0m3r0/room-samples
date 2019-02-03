@@ -7,4 +7,16 @@
     <string name="title_label">Title:</string>
     <string name="delete">Delete Task</string>
     <string name="task_completion_state">Completed</string>
+    <string name="manageUsers">Manage Users</string>
+    <string name="unassign">Unassign</string>
+    <string name="assignTaskInstruction">Assign Task</string>
+    <string name="taskDetailsAssignedLabel">Assigned to:</string>
+    <string name="unassigned">Unassigned</string>
+    <string name="users">Users</string>
+    <string name="user_name_description">User\\\'s name</string>
+    <string name="assignedLabel">Assigned to: %s</string>
+    <string name="numTasksAssigned">%d tasks</string>
+    <string name="task_creation_date">Create on:</string>
+    <string name="notesLabel">Notes:</string>
+    <string name="notesHint">Lorem</string>
 </resources>
