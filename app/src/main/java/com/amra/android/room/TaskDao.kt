@@ -2,6 +2,9 @@ package com.amra.android.room
 
 import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.*
+import com.amra.android.room.DatabaseDataHolder.AssignedTask
+import com.amra.android.room.DatabaseDataHolder.TaskUserPair
+import com.amra.android.room.users.User
 
 @Dao
 interface TaskDao {
@@ -10,24 +13,30 @@ interface TaskDao {
     fun insert(task: Task): Long
 
     @Insert
-    fun insert(tasks: List<Task>): List<Long>
+    fun insertAll(tasks: List<Task>): List<Long>
 
     @Query("SELECT * FROM Task")
     fun getAll(): LiveData<List<Task>>
 
+    @Transaction
+    @Query("SELECT Task.id as task_id, Task.completed as task_completed, Task.title as task_title, Task.creationDate as task_creationDate, Task.notes as task_notes, AssignedTask.user, User.* FROM Task LEFT OUTER JOIN AssignedTask on Task.id = AssignedTask.task LEFT OUTER JOIN User on AssignedTask.user = User.id")
+    fun getAllWithAssignedUsers(): LiveData<List<TaskUserPair>>
+
+    @Query("SELECT Task.id as task_id, Task.completed as task_completed, Task.title as task_title, Task.creationDate as task_creationDate, Task.notes as task_notes, AssignedTask.user, User.* FROM Task LEFT OUTER JOIN AssignedTask on Task.id = AssignedTask.task LEFT OUTER JOIN User on AssignedTask.user = User.id WHERE Task.id = :taskId")
+    fun getAssignedUsers(taskId: Int): LiveData<List<TaskUserPair>>
+
     @Query("SELECT * FROM Task WHERE id = :taskId")
     fun getTask(taskId: Int): LiveData<Task>
 
-    @Delete
+    @Delete()
     fun delete(task: Task)
-
-    @Query("DELETE FROM Task WHERE id = :taskId")
-    fun delete(taskId: Int)
 
     @Update
     fun update(task: Task)
 
-    @Query("UPDATE Task SET title=:taskTitle, completed=:taskIsCompleted WHERE id=:taskId")
-    fun update(taskId: Int, taskTitle: String, taskIsCompleted: Boolean)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun addAssignedTask(assignedTask: AssignedTask)
 
+    @Query("DELETE FROM AssignedTask WHERE AssignedTask.task = :taskId")
+    fun removeAllAssignedUsers(taskId: Int)
 }
